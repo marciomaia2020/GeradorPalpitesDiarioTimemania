@@ -1,0 +1,2070 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Jogos da Timemania - Personalizado</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #fff600; /* Amarelo (Timemania) */
+            --primary-dark: #ccc500;
+            --secondary-color: #12923d; /* Verde (Timemania) */
+            --accent-color: #19cc55;
+            --background-color: #fffee6;
+            --table-header: #fff600;
+            --table-border: #12923d;
+            --table-even: #fffdcc;
+            --table-odd: #ffffff;
+            --text-color: #1a1900;
+            --footer-color: #333100;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .logo {
+            width: 350px;
+            height: auto;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary-dark);
+            margin: 10px 0;
+            font-size: 2.2rem;
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            padding: 20px;
+            margin-bottom: 40px;
+        }
+
+        .centralizado {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            color: var(--primary-dark);
+        }
+
+        /* Seção dos Últimos Resultados */
+        .latest-results-section {
+            background: linear-gradient(135deg, #fffee6, #fffdcc);
+            border: 2px solid #fff600;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 16px rgba(255, 246, 0, 0.3);
+        }
+
+        .latest-results-title {
+            color: #fff600;
+            font-size: 1.3rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .result-card {
+            background: white;
+            border: 2px solid #12923d;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .result-card.destaque {
+            border: 3px solid #fff600;
+            box-shadow: 0 4px 12px rgba(255, 246, 0, 0.4);
+        }
+
+        .result-header {
+            color: var(--primary-dark);
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .result-date {
+            color: #333100;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .result-numbers {
+            margin: 10px 0;
+        }
+
+        .dezena-resultado {
+            display: inline-block;
+            width: 35px;
+            height: 35px;
+            line-height: 35px;
+            text-align: center;
+            background-color: var(--secondary-color);
+            color: white;
+            border-radius: 50%;
+            margin: 0 3px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(18, 146, 61, 0.3);
+        }
+
+        .result-team {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-top: 10px;
+            display: inline-block;
+            font-size: 0.9rem;
+        }
+
+        .use-result-btn {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: var(--text-color);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .use-result-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(18, 146, 61, 0.3);
+        }
+
+        /* Grid de Seleção de Números */
+        .number-selection-section {
+            background: linear-gradient(135deg, #fffee6, #fffdcc);
+            border: 2px solid #fff600;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 16px rgba(255, 246, 0, 0.3);
+        }
+
+        .selection-title {
+            color: #fff600;
+            font-size: 1.3rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .selection-info {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--primary-dark);
+        }
+
+        .numbers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+            gap: 8px;
+            max-width: 1000px;
+            margin: 0 auto 20px;
+        }
+
+        .number-btn {
+            width: 50px;
+            height: 50px;
+            border: 2px solid #12923d;
+            background: white;
+            color: var(--text-color);
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .number-btn:hover {
+            border-color: var(--primary-color);
+            transform: scale(1.1);
+        }
+
+        .number-btn.selected {
+            background: var(--secondary-color);
+            color: white;
+            border-color: var(--primary-color);
+            transform: scale(1.1);
+        }
+
+        .number-btn.last-result {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            border: 3px solid #a93226;
+            animation: pulse 2s infinite;
+        }
+
+        .number-btn.last-result.selected {
+            background: linear-gradient(135deg, #8e44ad, #7d3c98);
+            border: 3px solid #6c3483;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+        }
+
+        .selection-controls {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .selection-controls .button {
+            margin: 0 10px;
+        }
+
+        /* Configurações de Geração */
+        .generation-section {
+            background: linear-gradient(135deg, #fffee6, #fffdcc);
+            border: 2px solid #fff600;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 16px rgba(255, 246, 0, 0.3);
+        }
+
+        .generation-title {
+            color: #fff600;
+            font-size: 1.3rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .config-item {
+            background: white;
+            border: 2px solid #12923d;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .config-item label {
+            display: block;
+            color: #333100;
+            font-size: 1rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .config-item input,
+        .config-item select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #12923d;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-align: center;
+            background: #fffee6;
+            color: #333100;
+        }
+
+        .config-item input:focus,
+        .config-item select:focus {
+            outline: none;
+            border-color: #fff600;
+            box-shadow: 0 0 0 3px rgba(255, 246, 0, 0.2);
+        }
+
+        /* Jogos Gerados */
+        .games-section {
+            background: linear-gradient(135deg, #fffee6, #fffdcc);
+            border: 2px solid #fff600;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 16px rgba(255, 246, 0, 0.3);
+            display: none;
+        }
+
+        .games-title {
+            color: #fff600;
+            font-size: 1.3rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .game-card {
+            background: white;
+            border: 2px solid #12923d;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 0;
+        }
+
+        .game-original {
+            background: linear-gradient(135deg, #fff94d, #fff833);
+            border: 2px solid #fff600;
+        }
+
+        .game-adjusted {
+            background: linear-gradient(135deg, #fffee6, #fffdcc);
+            border: 2px solid #12923d;
+        }
+
+        .game-type-badge {
+            background: var(--secondary-color);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .digits-info {
+            background: var(--primary-color);
+            color: var(--text-color);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-top: 5px;
+            display: inline-block;
+        }
+
+        .result-premio-info {
+            margin-top: 15px;
+            padding: 10px;
+            background: linear-gradient(135deg, #fffdcc, #fffee6);
+            border-radius: 8px;
+            border: 1px solid #12923d;
+        }
+
+        .premio-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+            font-size: 0.8rem;
+        }
+
+        .premio-valor {
+            font-weight: bold;
+            color: var(--primary-dark);
+        }
+
+        .result-estimado {
+            text-align: center;
+            margin-top: 10px;
+            padding: 8px;
+            background: var(--secondary-color);
+            color: white;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .game-header {
+            color: var(--primary-dark);
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .game-numbers {
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .dezena-jogo {
+            display: inline-block;
+            width: 35px;
+            height: 35px;
+            line-height: 35px;
+            text-align: center;
+            background-color: var(--secondary-color);
+            color: white;
+            border-radius: 50%;
+            margin: 0 3px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(18, 146, 61, 0.3);
+        }
+
+        .button {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 10px;
+            display: inline-block;
+            border-radius: 8px;
+            text-align: center;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            box-shadow: 0 3px 6px rgba(18, 146, 61, 0.3);
+        }
+
+        .button:hover {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(255, 246, 0, 0.4);
+        }
+
+        .button:active {
+            transform: translateY(0);
+        }
+
+        .button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .download-buttons {
+            margin: 30px 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 20px;
+            text-align: center;
+            background-color: var(--secondary-color);
+            color: white;
+            width: 100%;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            margin-left: 5px;
+            cursor: help;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 250px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 99999;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-bottom: 10px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.85rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            border: 2px solid #fff600;
+        }
+
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #555 transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .loading {
+            text-align: center;
+            margin: 20px 0;
+            color: var(--primary-dark);
+            font-size: 1.1rem;
+            font-weight: bold;
+            padding: 20px;
+            background-color: var(--table-even);
+            border-radius: 8px;
+            border: 2px solid var(--secondary-color);
+            display: none;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(18, 146, 61, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--secondary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+		
+		img {
+			  display: block;
+			  margin: auto;
+			  width:200px;
+			  height:100px;
+			  opacity: 0.5;
+			}
+		img:hover {
+				opacity: 1.0;
+		}
+		
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .logo {
+                width: 280px;
+            }
+
+            .numbers-grid {
+                grid-template-columns: repeat(8, 1fr);
+                max-width: 100%;
+            }
+
+            .number-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 0.9rem;
+            }
+
+            .config-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dezena-resultado,
+            .dezena-jogo {
+                width: 30px;
+                height: 30px;
+                line-height: 30px;
+                font-size: 0.8rem;
+                margin: 0 2px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .logo {
+                width: 220px;
+            }
+
+            .numbers-grid {
+                grid-template-columns: repeat(6, 1fr);
+            }
+
+            .number-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <img src="https://i.postimg.cc/W4g9ShFc/timemania.png" alt="Timemania Logo" class="logo">
+        <h1>Gerador de Jogos da Timemania</h1>
+    </div>
+    
+    <div class="centralizado">
+        <p>Crie seus jogos personalizados da <strong>Timemania</strong> com ajustes inteligentes</p>
+        <p><small>Escolha seus números • Selecione seu time • Configure os ajustes • Gere quantos jogos quiser</small></p>
+    </div>
+
+    <!-- Loading dos Últimos Resultados -->
+    <div id="loadingResults" class="loading">
+        <div class="loading-spinner"></div> Carregando últimos resultados...
+    </div>
+
+    <!-- Seção dos Últimos Resultados -->
+    <div class="latest-results-section" id="latestResultsSection" style="display: none;">
+        <div class="latest-results-title">
+            <i class="fas fa-trophy"></i> Últimos 6 Concursos da Timemania
+        </div>
+        <div class="results-grid" id="resultsGrid">
+            <!-- Resultados serão inseridos aqui -->
+        </div>
+    </div>
+
+    <!-- Seção de Seleção de Números -->
+    <div class="number-selection-section">
+        <div class="selection-title">
+            <i class="fas fa-mouse-pointer"></i> Escolha seus 10 Números da Sorte
+        </div>
+        <div class="selection-info">
+            <p><strong>Selecione exatamente 10 números de 01 a 80</strong></p>
+            <p id="selectedCount">Selecionados: <span>0</span>/10</p>
+        </div>
+        <div class="numbers-grid" id="numbersGrid">
+            <!-- Números serão gerados via JavaScript -->
+        </div>
+		<div align="center">
+			<span><small>Escolha também seu Time do Coração na seção de configurações!</small></span>
+		</div>
+        <div class="selection-controls">
+            <button class="button" onclick="clearSelection()">
+                <i class="fas fa-eraser"></i> Limpar Seleção
+            </button>
+            <button class="button" onclick="randomSelection()">
+                <i class="fas fa-dice"></i> Seleção Aleatória
+            </button>
+        </div>
+    </div>
+
+    <!-- Configurações de Geração -->
+    <div class="generation-section">
+        <div class="generation-title">
+            <i class="fas fa-cogs"></i> Configurações dos Jogos
+        </div>
+        <div class="config-grid">
+            <div class="config-item">
+                <label>Jogos:</label>
+                <input type="number" id="qtdJogos" min="1" value="8" onchange="updateTotalValue()">
+                <span class="tooltip"><i class="fas fa-info-circle"></i>
+                    <span class="tooltiptext">Número de jogos diferentes que serão gerados</span>
+                </span>
+            </div>
+            
+            <div class="config-item">
+                <label>Ajustes:</label>
+                <select id="ajusteDezenas">
+                    <option value="0">Sem Ajuste (0)</option>
+                    <option value="1" selected>+ 1</option>
+                    <option value="2">+ 2</option>
+                    <option value="3">+ 3</option>
+                    <option value="4">+ 4</option>
+                    <option value="5">+ 5</option>
+                    <option value="6">+ 6</option>
+                    <option value="7">+ 7</option>
+                    <option value="8">+ 8</option>
+                    <option value="9">+ 9</option>
+                    <option value="-1">- 1</option>
+                    <option value="-2">- 2</option>
+                    <option value="-3">- 3</option>
+                    <option value="-4">- 4</option>
+                    <option value="-5">- 5</option>
+                    <option value="-6">- 6</option>
+                    <option value="-7">- 7</option>
+                    <option value="-8">- 8</option>
+                    <option value="-9">- 9</option>
+                </select>
+                <span class="tooltip"><i class="fas fa-info-circle"></i>
+                    <span class="tooltiptext">Valor que será somado/subtraído de cada número (até ±9)</span>
+                </span>
+            </div>
+
+			<div class="config-item">
+				<label>Custo:</label>
+				<select id="valorJogo" onchange="updateTotalValue()">
+					<option value="3.00" selected>10 → R$ 3,00</option>
+					<option value="12.00">11 → R$ 12,00</option>
+					<option value="33.00">12 → R$ 33,00</option>
+					<option value="72.00">13 → R$ 72,00</option>
+					<option value="135.00">14 → R$ 135,00</option>
+					<option value="225.00">15 → R$ 225,00</option>
+				</select>
+				<span class="tooltip"><i class="fas fa-info-circle"></i>
+					<span class="tooltiptext">Valor de cada jogo conforme a quantidade de números escolhidos</span>
+				</span>
+			</div>
+
+            <div class="config-item">
+                <label>Time do Coração:</label>
+                <select id="timeCoracao">
+                    <option value="">Escolha seu time...</option>
+                    <option value="ABC/RN">ABC/RN</option>
+                    <option value="AMERICA/MG">AMÉRICA/MG</option>
+                    <option value="AMERICA/RN">AMÉRICA/RN</option>
+                    <option value="ATHLETICO/PR">ATHLETICO/PR</option>
+                    <option value="ATLETICO/GO">ATLÉTICO/GO</option>
+                    <option value="ATLETICO/MG">ATLÉTICO/MG</option>
+                    <option value="AVAI/SC">AVAÍ/SC</option>
+                    <option value="BAHIA/BA">BAHIA/BA</option>
+                    <option value="BOTAFOGO/PB">BOTAFOGO/PB</option>
+                    <option value="BOTAFOGO/RJ">BOTAFOGO/RJ</option>
+                    <option value="BRAGANTINO/SP">BRAGANTINO/SP</option>
+                    <option value="CEARA/CE">CEARÁ/CE</option>
+                    <option value="CHAPECOENSE/SC">CHAPECOENSE/SC</option>
+                    <option value="CORINTHIANS/SP">CORINTHIANS/SP</option>
+                    <option value="CORITIBA/PR">CORITIBA/PR</option>
+                    <option value="CRB/AL">CRB/AL</option>
+                    <option value="CRICIUMA/SC">CRICIÚMA/SC</option>
+                    <option value="CRUZEIRO/MG">CRUZEIRO/MG</option>
+                    <option value="CSA/AL">CSA/AL</option>
+                    <option value="CUIABA/MT">CUIABÁ/MT</option>
+                    <option value="FIGUEIRENSE/SC">FIGUEIRENSE/SC</option>
+                    <option value="FLAMENGO/RJ">FLAMENGO/RJ</option>
+                    <option value="FLUMINENSE/RJ">FLUMINENSE/RJ</option>
+                    <option value="FORTALEZA/CE">FORTALEZA/CE</option>
+                    <option value="GOIAS/GO">GOIÁS/GO</option>
+                    <option value="GREMIO/RS">GRÊMIO/RS</option>
+                    <option value="GUARANI/SP">GUARANI/SP</option>
+                    <option value="INTERNACIONAL/RS">INTERNACIONAL/RS</option>
+                    <option value="ITUANO/SP">ITUANO/SP</option>
+                    <option value="JUVENTUDE/RS">JUVENTUDE/RS</option>
+                    <option value="LONDRINA/PR">LONDRINA/PR</option>
+                    <option value="NAUTICO/PE">NÁUTICO/PE</option>
+                    <option value="OPERARIO/PR">OPERÁRIO/PR</option>
+                    <option value="PALMEIRAS/SP">PALMEIRAS/SP</option>
+                    <option value="PARANA/PR">PARANÁ/PR</option>
+                    <option value="PONTE PRETA/SP">PONTE PRETA/SP</option>
+                    <option value="REMO/PA">REMO/PA</option>
+                    <option value="SAMPAIO CORREA/MA">SAMPAIO CORRÊA/MA</option>
+                    <option value="SANTA CRUZ/PE">SANTA CRUZ/PE</option>
+                    <option value="SANTOS/SP">SANTOS/SP</option>
+                    <option value="SAO PAULO/SP">SÃO PAULO/SP</option>
+                    <option value="SPORT/PE">SPORT/PE</option>
+                    <option value="TOMBENSE/MG">TOMBENSE/MG</option>
+                    <option value="VASCO/RJ">VASCO/RJ</option>
+                    <option value="VILA NOVA/GO">VILA NOVA/GO</option>
+                    <option value="VITORIA/BA">VITÓRIA/BA</option>
+                </select>
+                <span class="tooltip"><i class="fas fa-info-circle"></i>
+                    <span class="tooltiptext">Seu time do coração para todos os jogos gerados</span>
+                </span>
+            </div>
+
+            <div class="config-item">
+                <label>Não a Repetição:</label>
+                <div style="display: flex; align-items: center; justify-content: center; margin-top: 10px;">
+                    <input type="checkbox" id="evitarUltimoConcurso" style="width: auto; margin-right: 10px; transform: scale(1.5);">
+                    <label for="evitarUltimoConcurso" style="margin: 0; font-size: 0.9rem; text-transform: none;"><span><small>Ñ dez. último concurso</small></span></label>
+                </div>
+                <span class="tooltip"><i class="fas fa-info-circle"></i>
+                    <span class="tooltiptext">Quando marcado, evita usar as dezenas que saíram no último concurso</span>
+                </span>
+            </div>
+        </div>
+        
+        <div style="text-align: center;">
+            <div id="totalValueDisplay" style="background: white; border: 2px solid #12923d; border-radius: 8px; padding: 15px; margin-bottom: 15px; color: #333100; font-weight: bold;">
+                <i class="fas fa-calculator"></i> Total: R$ 27,00 (9 jogos × R$ 3,00)
+            </div>
+            <div id="digitsInfo" style="background: linear-gradient(135deg, #19cc55, #12923d); color: white; border-radius: 8px; padding: 10px; margin-bottom: 15px; font-weight: bold; text-align: center; display: none;">
+                <i class="fas fa-chart-bar"></i> <span id="digitsText">Aguardando seleção...</span>
+            </div>
+            <button class="button" onclick="generateGames()" id="generateBtn">
+                <i class="fas fa-magic"></i> Gerar Jogos
+            </button>
+            <button class="button" onclick="showInfoModal()" style="background: #3498db; margin-left: 10px;">
+                <i class="fas fa-info-circle"></i> Como Funciona
+            </button>
+        </div>
+    </div>
+
+    <!-- Seção dos Jogos Gerados -->
+    <div class="games-section" id="gamesSection">
+        <div class="games-title">
+            <i class="fas fa-list-ol"></i> Seus Jogos Gerados
+        </div>
+        <div id="gamesContainer">
+            <!-- Jogos serão inseridos aqui -->
+        </div>
+        
+        <!-- Botões de Download -->
+        <div class="download-buttons">
+            <button class="button" onclick="downloadTXT()">
+                <i class="fas fa-file-alt"></i> Baixar TXT
+            </button>
+            <button class="button" onclick="downloadHTML()">
+                <i class="fas fa-file-code"></i> Baixar HTML
+            </button>
+            <button class="button" onclick="downloadXLSX()">
+                <i class="fas fa-file-excel"></i> Baixar XLSX
+            </button>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div>Feito por: <i>Márcio Fernando Maia - Todos os direitos reservados - 2025</i></div>
+</footer>
+
+<script>
+let selectedNumbers = [];
+let generatedGames = [];
+let latestResults = [];
+
+// Configuração da API
+const API_CONFIG = {
+    CAIXA_URL: 'https://servicebus2.caixa.gov.br/portaldeloterias/api/timemania',
+    CORS_PROXY_URLS: [
+        'https://api.allorigins.win/get?url=',
+        'https://corsproxy.io/?'
+    ]
+};
+
+// =================== INICIALIZAÇÃO ===================
+
+window.addEventListener('load', () => {
+    console.log('Gerador de Jogos da Timemania carregado!');
+    
+    // Gerar grid de números
+    generateNumbersGrid();
+    
+    // Carregar últimos resultados
+    loadLatestResults();
+});
+
+// =================== GRID DE NÚMEROS ===================
+
+function generateNumbersGrid() {
+    const grid = document.getElementById('numbersGrid');
+    
+    for (let i = 1; i <= 80; i++) {
+        const btn = document.createElement('button');
+        btn.className = 'number-btn';
+        btn.textContent = i.toString().padStart(2, '0');
+        btn.onclick = () => toggleNumber(i, btn);
+        grid.appendChild(btn);
+    }
+}
+
+function toggleNumber(number, btn) {
+    const index = selectedNumbers.indexOf(number);
+    
+    if (index === -1) {
+        // Adicionar número
+        if (selectedNumbers.length < 10) {
+            selectedNumbers.push(number);
+            btn.classList.add('selected');
+        } else {
+            showNotification('❌ Você só pode selecionar 10 números!', 'error');
+        }
+    } else {
+        // Remover número
+        selectedNumbers.splice(index, 1);
+        btn.classList.remove('selected');
+    }
+    
+    updateSelectedCount();
+    updateGenerateButton();
+    updateDigitsInfo();
+    updateTotalValue();
+}
+
+function updateSelectedCount() {
+    const countSpan = document.querySelector('#selectedCount span');
+    countSpan.textContent = selectedNumbers.length;
+}
+
+function updateGenerateButton() {
+    const btn = document.getElementById('generateBtn');
+    const timeCoracao = document.getElementById('timeCoracao').value;
+    btn.disabled = selectedNumbers.length !== 10 || !timeCoracao;
+}
+
+function updateDigitsInfo() {
+    const digitsDiv = document.getElementById('digitsInfo');
+    const digitsText = document.getElementById('digitsText');
+    
+    if (selectedNumbers.length > 0) {
+        const digits = selectedNumbers.map(n => n.toString().slice(-1));
+        const digitCount = {};
+        
+        digits.forEach(d => {
+            digitCount[d] = (digitCount[d] || 0) + 1;
+        });
+        
+        const digitInfo = Object.entries(digitCount)
+            .map(([digit, count]) => `${digit}(${count}x)`)
+            .join(' ');
+        
+        digitsText.textContent = `Dígitos finais: ${digitInfo}`;
+        digitsDiv.style.display = 'block';
+    } else {
+        digitsDiv.style.display = 'none';
+    }
+}
+
+function updateTotalValue() {
+    const qtdJogos = parseInt(document.getElementById('qtdJogos').value) || 8;
+    const ajuste = parseInt(document.getElementById('ajusteDezenas').value);
+    const valorJogo = parseFloat(document.getElementById('valorJogo').value);
+    
+    // Se sem ajuste, só o jogo original. Com ajuste, original + ajustados
+    const totalJogos = ajuste === 0 ? 1 : qtdJogos + 1; // 1 original + N ajustados
+    const total = (totalJogos * valorJogo).toFixed(2);
+    
+    const totalDisplay = document.getElementById('totalValueDisplay');
+    totalDisplay.innerHTML = `<i class="fas fa-calculator"></i> Total: R$ ${total.replace('.', ',')} (${totalJogos} jogos × R$ ${valorJogo.toFixed(2).replace('.', ',')})`;
+}
+
+function clearSelection() {
+    selectedNumbers = [];
+    document.querySelectorAll('.number-btn').forEach(btn => {
+        btn.classList.remove('selected');
+    });
+    updateSelectedCount();
+    updateGenerateButton();
+    updateDigitsInfo();
+    showNotification('🧹 Seleção limpa!', 'info');
+}
+
+function randomSelection() {
+    clearSelection();
+    
+    while (selectedNumbers.length < 10) {
+        const num = Math.floor(Math.random() * 80) + 1;
+        if (!selectedNumbers.includes(num)) {
+            selectedNumbers.push(num);
+            const btn = document.querySelector(`.number-btn:nth-child(${num})`);
+            btn.classList.add('selected');
+        }
+    }
+    
+    updateSelectedCount();
+    updateGenerateButton();
+    updateDigitsInfo();
+    showNotification('🎲 Números selecionados aleatoriamente!', 'success');
+}
+
+// =================== ÚLTIMOS RESULTADOS ===================
+
+async function loadLatestResults() {
+    const loadingDiv = document.getElementById('loadingResults');
+    const resultsSection = document.getElementById('latestResultsSection');
+    
+    loadingDiv.style.display = 'block';
+    
+    try {
+        console.log('Carregando últimos resultados...');
+        
+        // Tentar buscar últimos 6 resultados
+        const results = await fetchLatestResults();
+        latestResults = results;
+        
+        displayLatestResults(results);
+        
+        loadingDiv.style.display = 'none';
+        resultsSection.style.display = 'block';
+        
+    } catch (error) {
+        console.error('Erro ao carregar resultados:', error);
+        loadingDiv.style.display = 'none';
+        
+        // Mostrar resultados fictícios em caso de erro
+        const mockResults = generateMockResults();
+        latestResults = mockResults;
+        displayLatestResults(mockResults);
+        resultsSection.style.display = 'block';
+        
+        showNotification('⚠️ Usando dados simulados (API indisponível)', 'info');
+    }
+}
+
+async function fetchLatestResults() {
+    // Tentar descobrir último concurso
+    let ultimoConcurso = 2277; // fallback
+    
+    for (const proxyUrl of API_CONFIG.CORS_PROXY_URLS) {
+        try {
+            let url = `${proxyUrl}${encodeURIComponent(API_CONFIG.CAIXA_URL)}`;
+            const response = await fetch(url);
+            
+            if (response.ok) {
+                const proxyData = await response.json();
+                const data = JSON.parse(proxyData.contents);
+                if (data.numero) {
+                    ultimoConcurso = parseInt(data.numero);
+                    break;
+                }
+            }
+        } catch (error) {
+            console.warn(`Proxy ${proxyUrl} falhou:`, error);
+        }
+    }
+    
+    // Buscar os últimos 6 concursos
+    const results = [];
+    for (let i = 0; i < 6; i++) {
+        const concursoNum = ultimoConcurso - i;
+        const result = await fetchSingleResult(concursoNum);
+        if (result) results.push(result);
+    }
+    
+    return results;
+}
+
+async function fetchSingleResult(concursoNum) {
+    for (const proxyUrl of API_CONFIG.CORS_PROXY_URLS) {
+        try {
+            const caixaUrl = `${API_CONFIG.CAIXA_URL}/${concursoNum}`;
+            let url = `${proxyUrl}${encodeURIComponent(caixaUrl)}`;
+            
+            const response = await fetch(url);
+            if (response.ok) {
+                const proxyData = await response.json();
+                const data = JSON.parse(proxyData.contents);
+                
+                if (data.numero && data.listaDezenas) {
+                    return {
+                        concurso: data.numero,
+                        data: formatDate(data.dataApuracao || new Date().toISOString()),
+                        dezenas: data.listaDezenas,
+                        timeCoracao: data.nomeTimeCoracaoMesSorte || 'SEM TIME',
+                        acumulado: data.acumulado || false,
+                        proximoConcurso: data.numeroConcursoProximo,
+                        dataProximoConcurso: data.dataProximoConcurso,
+                        valorEstimadoProximo: data.valorEstimadoProximoConcurso,
+                        premiacoes: data.listaRateioPremio || [],
+                        local: data.localSorteio || 'ESPAÇO DA SORTE',
+                        cidade: data.nomeMunicipioUFSorteio || 'SÃO PAULO, SP'
+                    };
+                }
+            }
+        } catch (error) {
+            console.warn(`Erro ao buscar concurso ${concursoNum}:`, error);
+        }
+    }
+    
+    return null;
+}
+
+function generateMockResults() {
+    const results = [];
+    const times = ['FLAMENGO/RJ', 'CORINTHIANS/SP', 'PALMEIRAS/SP', 'SÃO PAULO/SP', 'SANTOS/SP', 'VASCO/RJ'];
+    
+    for (let i = 0; i < 6; i++) {
+        const concurso = 2277 - i;
+        const date = new Date();
+        date.setDate(date.getDate() - (i * 3));
+        
+        const dezenas = [];
+        while (dezenas.length < 7) {
+            const num = Math.floor(Math.random() * 80) + 1;
+            if (!dezenas.includes(num)) {
+                dezenas.push(num);
+            }
+        }
+        dezenas.sort((a, b) => a - b);
+        
+        results.push({
+            concurso: concurso,
+            data: formatDate(date.toISOString()),
+            dezenas: dezenas.map(n => n.toString().padStart(2, '0')),
+            timeCoracao: times[Math.floor(Math.random() * times.length)]
+        });
+    }
+    
+    return results;
+}
+
+function displayLatestResults(results) {
+    const grid = document.getElementById('resultsGrid');
+    grid.innerHTML = '';
+    
+    results.forEach((result, index) => {
+        const card = document.createElement('div');
+        card.className = `result-card ${index === 0 ? 'destaque' : ''}`;
+        
+        // Determinar status do concurso
+        const statusConcurso = result.acumulado ? 'ACUMULOU!' : (result.premiacoes && result.premiacoes[0] && result.premiacoes[0].numeroDeGanhadores > 0 ? `${result.premiacoes[0].numeroDeGanhadores} GANHADORES` : 'ACUMULOU!');
+        
+        // Informações de premiação
+        let premiacaoInfo = '';
+        if (result.premiacoes && result.premiacoes.length > 0) {
+            premiacaoInfo = result.premiacoes.slice(0, 6).map(p => 
+                `<div class="premio-item">
+                    <span>${p.descricaoFaixa}:</span>
+                    <span class="premio-valor">${p.numeroDeGanhadores} - R$ ${p.valorPremio.toFixed(2).replace('.', ',')}</span>
+                </div>`
+            ).join('');
+        }
+        
+        // Próximo concurso e valor estimado
+        const proximoConcurso = result.proximoConcurso ? `Concurso ${result.proximoConcurso}` : 'A definir';
+        const dataProximo = result.dataProximoConcurso ? formatDate(result.dataProximoConcurso) : 'A definir';
+        const valorEstimado = result.valorEstimadoProximo ? `R$ ${(result.valorEstimadoProximo / 1000000).toFixed(1)} milhões` : 'A definir';
+        
+        card.innerHTML = `
+            <div class="result-header">
+                ${index === 0 ? '🏆 ' : ''}Concurso ${result.concurso}
+            </div>
+            <div class="result-date">
+                <i class="fas fa-calendar"></i> ${result.data} ${result.cidade ? `(${result.cidade.split(',')[1] || result.cidade})` : ''}
+            </div>
+            <div class="result-numbers">
+                ${result.dezenas.map(num => 
+                    `<span class="dezena-resultado">${num}</span>`
+                ).join('')}
+            </div>
+            <div class="result-team">⚽ ${result.timeCoracao}</div>
+            
+            <div style="color: ${result.acumulado ? '#e74c3c' : '#27ae60'}; font-weight: bold; margin: 10px 0; font-size: 0.9rem;">
+                ${statusConcurso}
+            </div>
+            
+            ${premiacaoInfo ? `<div class="result-premio-info">${premiacaoInfo}</div>` : ''}
+            
+            <div class="result-estimado">
+                Próximo Sorteio: ${proximoConcurso}<br>
+                ${dataProximo}<br>
+                Prêmio Estimado: <strong>${valorEstimado}</strong>
+            </div>
+            
+            <div>
+                <button class="use-result-btn" onclick="useResult(${index})">
+                    <i class="fas fa-magic"></i> Usar estes números
+                </button>
+            </div>
+        `;
+        
+        grid.appendChild(card);
+    });
+    
+    // Destacar números do último concurso na grade de seleção
+    if (results.length > 0) {
+        highlightLastConcursoNumbers(results[0].dezenas);
+    }
+}
+
+function highlightLastConcursoNumbers(lastConcursoDezenas) {
+    // Limpar destaques anteriores
+    document.querySelectorAll('.number-btn').forEach(btn => {
+        btn.classList.remove('last-result');
+    });
+    
+    // Destacar números do último concurso
+    lastConcursoDezenas.forEach(dezena => {
+        const numero = parseInt(dezena);
+        const btn = document.querySelector(`.number-btn:nth-child(${numero})`);
+        if (btn) {
+            btn.classList.add('last-result');
+        }
+    });
+    
+    // Adicionar informação visual
+    const selectionInfo = document.querySelector('.selection-info');
+    if (selectionInfo && lastConcursoDezenas.length > 0) {
+        const lastResultInfo = document.createElement('p');
+        lastResultInfo.id = 'lastResultInfo';
+        lastResultInfo.innerHTML = `<strong style="color: #e74c3c;">🔴 Números em destaque saíram no último concurso</strong>`;
+        lastResultInfo.style.marginTop = '10px';
+        selectionInfo.appendChild(lastResultInfo);
+    }
+}
+
+function useResult(index) {
+    const result = latestResults[index];
+    if (!result) return;
+    
+    // Limpar seleção atual
+    clearSelection();
+    
+    // Selecionar números do resultado
+    const numeros = result.dezenas.map(n => parseInt(n));
+    numeros.forEach(num => {
+        selectedNumbers.push(num);
+        const btn = document.querySelector(`.number-btn:nth-child(${num})`);
+        if (btn) btn.classList.add('selected');
+    });
+    
+    // Definir time do coração
+    const timeSelect = document.getElementById('timeCoracao');
+    const timeValue = result.timeCoracao.trim();
+    
+    // Buscar o time no select
+    for (let i = 0; i < timeSelect.options.length; i++) {
+        if (timeSelect.options[i].value === timeValue || timeSelect.options[i].text === timeValue) {
+            timeSelect.selectedIndex = i;
+            break;
+        }
+    }
+    
+    updateSelectedCount();
+    updateGenerateButton();
+    updateDigitsInfo();
+    updateTotalValue();
+    showNotification(`✅ Números do concurso ${result.concurso} selecionados!`, 'success');
+}
+
+// Atualizar o botão quando o time for selecionado
+document.getElementById('timeCoracao').addEventListener('change', updateGenerateButton);
+
+// =================== GERAÇÃO DE JOGOS ===================
+
+async function generateGames() {
+    if (selectedNumbers.length !== 10) {
+        showNotification('❌ Selecione exatamente 10 números!', 'error');
+        return;
+    }
+    
+    const timeCoracao = document.getElementById('timeCoracao').value;
+    if (!timeCoracao) {
+        showNotification('❌ Selecione seu Time do Coração!', 'error');
+        return;
+    }
+    
+    const qtdJogos = parseInt(document.getElementById('qtdJogos').value);
+    const ajusteBase = parseInt(document.getElementById('ajusteDezenas').value);
+    const evitarUltimoConcurso = document.getElementById('evitarUltimoConcurso').checked;
+    
+    if (qtdJogos < 1) {
+        showNotification('❌ Quantidade de jogos deve ser no mínimo 1!', 'error');
+        return;
+    }
+    
+    // Aviso para grandes quantidades
+    if (qtdJogos > 1000) {
+        const confirmed = await showConfirmDialog(
+            `⚠️ Você está prestes a gerar ${qtdJogos.toLocaleString()} jogos!\n\n` +
+            `Isso pode:\n` +
+            `• Demorar alguns segundos para processar\n` +
+            `• Consumir mais memória do navegador\n` +
+            `• Gerar arquivos grandes para download\n\n` +
+            `Deseja continuar?`
+        );
+        
+        if (!confirmed) {
+            return;
+        }
+    }
+    
+    // Obter dezenas do último concurso para evitar
+    let dezenasEvitar = [];
+    if (evitarUltimoConcurso && latestResults.length > 0) {
+        dezenasEvitar = latestResults[0].dezenas.map(d => parseInt(d));
+    }
+    
+    generatedGames = [];
+    let jogoCounter = 1;
+    
+    // Verificar se números selecionados coincidem com último concurso
+    if (evitarUltimoConcurso && dezenasEvitar.length > 0) {
+        const conflict = selectedNumbers.some(num => dezenasEvitar.includes(num));
+        if (conflict) {
+            showNotification('⚠️ Alguns números selecionados saíram no último concurso!', 'info');
+        }
+    }
+    
+    // Adicionar jogo original apenas UMA VEZ
+    const originalNumbers = [...selectedNumbers].sort((a, b) => a - b);
+    generatedGames.push({
+        jogo: jogoCounter++,
+        tipo: 'original',
+        numeros: originalNumbers.map(n => n.toString().padStart(2, '0')),
+        timeCoracao: timeCoracao
+    });
+    
+    // Gerar jogos ajustados com ajuste progressivo
+    if (ajusteBase !== 0) {
+        for (let i = 1; i <= qtdJogos; i++) {
+            // Calcular ajuste progressivo
+            const ajusteAtual = ajusteBase * i;
+            
+            // Aplicar ajuste progressivo
+            let gameNumbers = selectedNumbers.map(num => {
+                let adjusted = num + ajusteAtual;
+                
+                // Manter entre 1 e 80 (limites da Timemania)
+                if (adjusted < 1) adjusted = 1;
+                if (adjusted > 80) adjusted = 80;
+                
+                return adjusted;
+            });
+            
+            // Evitar dezenas do último concurso se checkbox estiver marcado
+            if (evitarUltimoConcurso && dezenasEvitar.length > 0) {
+                gameNumbers = gameNumbers.map(num => {
+                    let tentativas = 0;
+                    while (dezenasEvitar.includes(num) && tentativas < 10) {
+                        // Tentar um número alternativo próximo
+                        const alternativas = [num + 1, num - 1, num + 2, num - 2];
+                        for (const alt of alternativas) {
+                            if (alt >= 1 && alt <= 80 && !dezenasEvitar.includes(alt) && !gameNumbers.includes(alt)) {
+                                num = alt;
+                                break;
+                            }
+                        }
+                        tentativas++;
+                    }
+                    return num;
+                });
+            }
+            
+            gameNumbers.sort((a, b) => a - b);
+            
+            generatedGames.push({
+                jogo: jogoCounter++,
+                tipo: 'ajustado',
+                ajuste: ajusteAtual,
+                numeros: gameNumbers.map(n => n.toString().padStart(2, '0')),
+                timeCoracao: timeCoracao
+            });
+        }
+    }
+    
+    displayGeneratedGamesOptimized();
+    
+    let successMessage = `✅ ${generatedGames.length} jogos gerados com sucesso!`;
+    if (evitarUltimoConcurso && dezenasEvitar.length > 0) {
+        successMessage += ' (Evitando repetições do último concurso)';
+    }
+    
+    showNotification(successMessage, 'success');
+}
+
+// =================== DOWNLOADS ===================
+
+function downloadTXT() {
+    if (generatedGames.length === 0) {
+        showNotification('❌ Nenhum jogo foi gerado ainda!', 'error');
+        return;
+    }
+    
+    // Formato simplificado - APENAS AS DEZENAS separadas por espaços
+    let content = "";
+    
+    generatedGames.forEach(game => {
+        content += `${game.numeros.join(' ')}\n`;
+    });
+    
+    downloadFile(content, 'jogos_timemania.txt', 'text/plain');
+    showNotification('📄 Arquivo TXT baixado! (apenas dezenas)', 'success');
+}
+
+function downloadHTML() {
+    if (generatedGames.length === 0) {
+        showNotification('❌ Nenhum jogo foi gerado ainda!', 'error');
+        return;
+    }
+    
+    let html = `
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meus Jogos da Timemania</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fffee6, #fffdcc);
+            margin: 0;
+            padding: 20px;
+            color: #1a1900;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #ccc500;
+        }
+        .info {
+            text-align: center;
+            margin-bottom: 30px;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #fff600;
+        }
+        .game {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #12923d;
+            text-align: center;
+        }
+        .game-title {
+            font-weight: bold;
+            color: #ccc500;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        .numbers {
+            margin: 15px 0;
+        }
+        .number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            background: #12923d;
+            color: white;
+            border-radius: 50%;
+            margin: 0 5px;
+            font-weight: bold;
+        }
+        .team {
+            background: #fff600;
+            color: #1a1900;
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #333100;
+            font-style: italic;
+        }
+        @media print {
+            body { background: white; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>⚽ MEUS JOGOS DA TIMEMANIA ⚽</h1>
+    </div>
+    
+    <div class="info">
+        <p><strong>Data de Geração:</strong> ${new Date().toLocaleString('pt-BR')}</p>
+        <p><strong>Total de Jogos:</strong> ${generatedGames.length}</p>
+        <p><strong>Time do Coração:</strong> ${generatedGames[0]?.timeCoracao || 'Não informado'}</p>
+    </div>
+    
+    ${generatedGames.map(game => `
+        <div class="game">
+            <div class="game-title">🎫 Jogo ${game.jogo}</div>
+            <div class="numbers">
+                ${game.numeros.map(num => `<span class="number">${num}</span>`).join('')}
+            </div>
+            <div class="team">⚽ ${game.timeCoracao}</div>
+        </div>
+    `).join('')}
+    
+    <div class="footer">
+        <p>Gerado por: <strong>Gerador de Jogos da Timemania</strong></p>
+        <p>⚽ Boa sorte com seu time do coração! ⚽</p>
+    </div>
+</body>
+</html>`;
+    
+    downloadFile(html, 'jogos_timemania.html', 'text/html');
+    showNotification('🌐 Arquivo HTML baixado!', 'success');
+}
+
+function downloadXLSX() {
+    if (generatedGames.length === 0) {
+        showNotification('❌ Nenhum jogo foi gerado ainda!', 'error');
+        return;
+    }
+    
+    // Criar dados para a planilha
+    const data = [
+        ['JOGOS DA TIMEMANIA - GERADOS AUTOMATICAMENTE'],
+        [`Data de Geração: ${new Date().toLocaleString('pt-BR')}`],
+        [`Total de Jogos: ${generatedGames.length}`],
+        [`Time do Coração: ${generatedGames[0]?.timeCoracao || 'Não informado'}`],
+        [''], // linha vazia
+        ['Jogo', 'Nº 1', 'Nº 2', 'Nº 3', 'Nº 4', 'Nº 5', 'Nº 6', 'Nº 7', 'Nº 8', 'Nº 9', 'Nº 10', 'Time do Coração']
+    ];
+    
+    generatedGames.forEach(game => {
+        data.push([
+            `Jogo ${game.jogo}`,
+            ...game.numeros,
+            game.timeCoracao
+        ]);
+    });
+    
+    data.push(['']); // linha vazia
+    data.push(['Gerado por: Gerador de Jogos da Timemania']);
+    data.push(['Boa sorte! ⚽']);
+    
+    // Criar workbook
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet(data);
+    
+    // Ajustar largura das colunas
+    const colWidths = [
+        {wch: 12}, // Jogo
+        {wch: 8}, {wch: 8}, {wch: 8}, {wch: 8}, {wch: 8}, {wch: 8}, {wch: 8}, {wch: 8}, {wch: 8}, {wch: 8}, // Números
+        {wch: 20}  // Time
+    ];
+    ws['!cols'] = colWidths;
+    
+    XLSX.utils.book_append_sheet(wb, ws, "Jogos Timemania");
+    
+    // Baixar arquivo
+    XLSX.writeFile(wb, 'jogos_timemania.xlsx');
+    showNotification('📊 Arquivo XLSX baixado!', 'success');
+}
+
+// =================== FUNÇÕES AUXILIARES ===================
+
+function downloadFile(content, fileName, mimeType) {
+    const blob = new Blob([content], { type: mimeType });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = fileName;
+    link.click();
+    
+    setTimeout(() => {
+        URL.revokeObjectURL(link.href);
+    }, 100);
+}
+
+function formatDate(dateString) {
+    try {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('pt-BR');
+    } catch (error) {
+        return new Date().toLocaleDateString('pt-BR');
+    }
+}
+
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${type === 'success' ? 'linear-gradient(135deg, #22c55e, #16a34a)' : 
+                     type === 'error' ? 'linear-gradient(135deg, #ef4444, #dc2626)' : 
+                     'linear-gradient(135deg, #fff600, #12923d)'};
+        color: ${type === 'success' || type === 'error' ? 'white' : '#1a1900'};
+        padding: 15px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+        z-index: 10000;
+        font-weight: 600;
+        animation: slideInRight 0.3s ease;
+        max-width: 300px;
+    `;
+    notification.textContent = message;
+    
+    // Adicionar CSS da animação se não existir
+    if (!document.getElementById('notification-style')) {
+        const style = document.createElement('style');
+        style.id = 'notification-style';
+        style.textContent = `
+            @keyframes slideInRight {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    document.body.appendChild(notification);
+    
+    // Remover após 4 segundos
+    setTimeout(() => {
+        notification.remove();
+    }, 4000);
+}
+
+// =================== FUNÇÕES DE OTIMIZAÇÃO ===================
+
+function showConfirmDialog(message) {
+    return new Promise((resolve) => {
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        `;
+        
+        const dialog = document.createElement('div');
+        dialog.style.cssText = `
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border: 3px solid #fff600;
+        `;
+        
+        dialog.innerHTML = `
+            <div style="text-align: center; margin-bottom: 25px;">
+                <h3 style="color: #ccc500; margin-bottom: 15px; font-size: 1.4rem;">⚠️ Confirmação Necessária</h3>
+                <p style="color: #1a1900; line-height: 1.6; white-space: pre-line; font-size: 1rem;">${message}</p>
+            </div>
+            <div style="display: flex; justify-content: center; gap: 15px;">
+                <button id="cancelBtn" style="
+                    background: #e74c3c;
+                    color: white;
+                    border: none;
+                    padding: 12px 24px;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-size: 1rem;
+                    font-weight: 600;
+                    transition: all 0.3s ease;
+                ">❌ Cancelar</button>
+                <button id="confirmBtn" style="
+                    background: #12923d;
+                    color: white;
+                    border: none;
+                    padding: 12px 24px;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-size: 1rem;
+                    font-weight: 600;
+                    transition: all 0.3s ease;
+                ">✅ Continuar</button>
+            </div>
+        `;
+        
+        modal.appendChild(dialog);
+        document.body.appendChild(modal);
+        
+        // Adicionar eventos
+        const cancelBtn = dialog.querySelector('#cancelBtn');
+        const confirmBtn = dialog.querySelector('#confirmBtn');
+        
+        cancelBtn.addEventListener('click', () => {
+            document.body.removeChild(modal);
+            resolve(false);
+        });
+        
+        confirmBtn.addEventListener('click', () => {
+            document.body.removeChild(modal);
+            resolve(true);
+        });
+        
+        // Fechar com ESC
+        const keyHandler = (e) => {
+            if (e.key === 'Escape') {
+                document.body.removeChild(modal);
+                document.removeEventListener('keydown', keyHandler);
+                resolve(false);
+            }
+        };
+        document.addEventListener('keydown', keyHandler);
+        
+        // Hover effects
+        cancelBtn.addEventListener('mouseenter', () => {
+            cancelBtn.style.background = '#c0392b';
+            cancelBtn.style.transform = 'translateY(-2px)';
+        });
+        cancelBtn.addEventListener('mouseleave', () => {
+            cancelBtn.style.background = '#e74c3c';
+            cancelBtn.style.transform = 'translateY(0)';
+        });
+        
+        confirmBtn.addEventListener('mouseenter', () => {
+            confirmBtn.style.background = '#0e712f';
+            confirmBtn.style.transform = 'translateY(-2px)';
+        });
+        confirmBtn.addEventListener('mouseleave', () => {
+            confirmBtn.style.background = '#12923d';
+            confirmBtn.style.transform = 'translateY(0)';
+        });
+    });
+}
+
+// Otimização para grandes quantidades de jogos
+function displayGeneratedGamesOptimized() {
+    const container = document.getElementById('gamesContainer');
+    const section = document.getElementById('gamesSection');
+    
+    // Para quantidades muito grandes, mostrar apenas estatísticas
+    if (generatedGames.length > 5000) {
+        container.innerHTML = `
+            <div style="text-align: center; padding: 40px; background: white; border-radius: 10px; border: 2px solid #fff600; margin-bottom: 20px;">
+                <h3 style="color: #ccc500; margin-bottom: 20px;">
+                    🎮 ${generatedGames.length.toLocaleString()} Jogos Gerados com Sucesso!
+                </h3>
+                <p style="color: #1a1900; margin-bottom: 15px; font-size: 1.1rem;">
+                    <strong>Devido à grande quantidade, os jogos não são exibidos na tela para otimizar a performance.</strong>
+                </p>
+                <p style="color: #333100; margin-bottom: 20px;">
+                    Use os botões de download abaixo para obter seus jogos:
+                </p>
+                <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+                    <span style="background: #fff600; color: #1a1900; padding: 8px 15px; border-radius: 20px; font-weight: bold;">
+                        📄 TXT: ${(generatedGames.length * 25 / 1024).toFixed(1)} KB
+                    </span>
+                    <span style="background: #12923d; color: white; padding: 8px 15px; border-radius: 20px; font-weight: bold;">
+                        🌐 HTML: ${(generatedGames.length * 180 / 1024).toFixed(1)} KB
+                    </span>
+                    <span style="background: #19cc55; color: white; padding: 8px 15px; border-radius: 20px; font-weight: bold;">
+                        📊 XLSX: ${(generatedGames.length * 60 / 1024).toFixed(1)} KB
+                    </span>
+                </div>
+            </div>
+        `;
+    } else if (generatedGames.length > 1000) {
+        // Para quantidades médias, mostrar apenas os primeiros 50 jogos
+        container.innerHTML = `
+            <div style="text-align: center; padding: 20px; background: #fffee6; border-radius: 8px; border: 2px solid #12923d; margin-bottom: 20px;">
+                <p style="color: #ccc500; font-weight: bold; margin-bottom: 10px;">
+                    📊 ${generatedGames.length.toLocaleString()} jogos gerados! Exibindo apenas os primeiros 50 para otimizar a performance.
+                </p>
+                <small style="color: #333100;">Use os botões de download para obter todos os jogos.</small>
+            </div>
+            <div class="games-grid" id="gamesGrid"></div>
+        `;
+        
+        const gamesGrid = document.getElementById('gamesGrid');
+        
+        // Mostrar apenas os primeiros 50 jogos
+        generatedGames.slice(0, 50).forEach(game => {
+            const card = createGameCard(game);
+            gamesGrid.appendChild(card);
+        });
+    } else {
+        // Para quantidades normais, mostrar todos os jogos
+        container.innerHTML = '<div class="games-grid" id="gamesGrid"></div>';
+        const gamesGrid = document.getElementById('gamesGrid');
+        
+        generatedGames.forEach(game => {
+            const card = createGameCard(game);
+            gamesGrid.appendChild(card);
+        });
+    }
+    
+    section.style.display = 'block';
+}
+
+// Função auxiliar para criar um card de jogo
+function createGameCard(game) {
+    const card = document.createElement('div');
+    
+    // Definir classe baseada no tipo
+    if (game.tipo === 'original') {
+        card.className = 'game-card game-original';
+    } else {
+        card.className = 'game-card game-adjusted';
+    }
+    
+    // Criar badge do tipo
+    let typeBadge = '';
+    if (game.tipo === 'original') {
+        typeBadge = '<span class="game-type-badge">⚽ ORIGINAL</span>';
+    } else {
+        const ajusteSymbol = game.ajuste > 0 ? '+' : '';
+        typeBadge = `<span class="game-type-badge">📈 AJUSTADO (${ajusteSymbol}${game.ajuste})</span>`;
+    }
+    
+    // Contar dígitos únicos usados
+    const allDigits = game.numeros.flatMap(n => n.toString().split(''));
+    const uniqueDigits = [...new Set(allDigits)];
+    const digitCount = uniqueDigits.length;
+    
+    card.innerHTML = `
+        <div class="game-header">
+            <i class="fas fa-ticket-alt"></i> Jogo ${game.jogo}
+            ${typeBadge}
+        </div>
+        <div class="game-numbers">
+            ${game.numeros.map(num => 
+                `<span class="dezena-jogo">${num}</span>`
+            ).join('')}
+        </div>
+        <div style="text-align: center; margin-top: 10px;">
+            <span class="result-team">⚽ ${game.timeCoracao}</span>
+        </div>
+        <div style="text-align: center; margin-top: 5px;">
+            <span class="digits-info">${digitCount}d</span>
+        </div>
+    `;
+    
+    return card;
+}
+
+// =================== MODAL DE INFORMAÇÕES ===================
+
+function showInfoModal() {
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 99999;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        overflow-y: auto;
+        padding: 20px;
+    `;
+    
+    const dialog = document.createElement('div');
+    dialog.style.cssText = `
+        background: white;
+        border-radius: 15px;
+        max-width: 800px;
+        width: 95%;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 15px 50px rgba(0,0,0,0.4);
+        border: 3px solid #fff600;
+        position: relative;
+    `;
+    
+    dialog.innerHTML = `
+        <div style="background: linear-gradient(135deg, #fff600, #12923d); color: #1a1900; padding: 20px; border-radius: 12px 12px 0 0; text-align: center; position: relative;">
+            <button id="closeModal" style="
+                position: absolute;
+                top: 15px;
+                right: 20px;
+                background: rgba(255,255,255,0.2);
+                border: none;
+                color: #1a1900;
+                font-size: 1.5rem;
+                cursor: pointer;
+                border-radius: 50%;
+                width: 35px;
+                height: 35px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.3s ease;
+            " onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
+            <h2 style="margin: 0; font-size: 1.8rem;">
+                <i class="fas fa-info-circle"></i> Como Funciona o Sistema
+            </h2>
+            <p style="margin: 10px 0 0 0; opacity: 0.9;">Otimizado para qualquer quantidade de jogos</p>
+        </div>
+        
+        <div style="padding: 30px; line-height: 1.6;">
+            
+            <!-- Informações da Timemania -->
+            <div style="background: linear-gradient(135deg, #fff600, #12923d); color: #1a1900; padding: 20px; border-radius: 10px; margin-bottom: 25px;">
+                <h3 style="margin: 0 0 15px 0; font-size: 1.3rem;">
+                    <i class="fas fa-futbol"></i> Características da Timemania
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 15px;">
+                    <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px;">
+                        <strong>⚽ Time do Coração</strong><br>
+                        <small>Escolha seu time favorito - também pode premiar!</small>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px;">
+                        <strong>🔢 10 Números</strong><br>
+                        <small>Escolha 10 números de 01 a 80</small>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px;">
+                        <strong>💰 Múltiplas Faixas</strong><br>
+                        <small>7, 6, 5, 4, 3 acertos + Time do Coração</small>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px;">
+                        <strong>📅 Sorteios</strong><br>
+                        <small>Terças, quintas e sábados</small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sistema de Otimização -->
+            <div style="background: linear-gradient(135deg, #3498db, #2980b9); color: white; padding: 20px; border-radius: 10px; margin-bottom: 25px;">
+                <h3 style="margin: 0 0 15px 0; font-size: 1.3rem;">
+                    <i class="fas fa-rocket"></i> Sistema de Otimização
+                </h3>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-top: 15px;">
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 10px;">🎮</div>
+                        <strong>Até 1.000 jogos</strong><br>
+                        <small>• Exibe todos os jogos normalmente<br>• Performance otimizada<br>• Interface completa</small>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 10px;">🎯</div>
+                        <strong>1.001 a 5.000 jogos</strong><br>
+                        <small>• Mostra apenas os primeiros 50<br>• Aviso claro sobre limitação<br>• Performance preservada</small>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 10px;">💰</div>
+                        <strong>Acima de 5.000 jogos</strong><br>
+                        <small>• Não exibe jogos na tela<br>• Mostra estatísticas<br>• Performance máxima</small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Estratégias -->
+            <div style="background: linear-gradient(135deg, #27ae60, #229954); color: white; padding: 20px; border-radius: 10px; margin-bottom: 25px;">
+                <h3 style="margin: 0 0 15px 0; font-size: 1.3rem;">
+                    <i class="fas fa-brain"></i> Estratégias Inteligentes
+                </h3>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-top: 15px;">
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px;">
+                        <h4 style="margin: 0 0 10px 0;">📊 Baseado em Dados Reais:</h4>
+                        <ul style="margin: 0; padding-left: 20px;">
+                            <li>✅ API oficial da Caixa</li>
+                            <li>✅ Últimos 6 concursos</li>
+                            <li>✅ Times do coração vencedores</li>
+                            <li>✅ Estatísticas atualizadas</li>
+                        </ul>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px;">
+                        <h4 style="margin: 0 0 10px 0;">🔧 Ajustes Progressivos:</h4>
+                        <ul style="margin: 0; padding-left: 20px;">
+                            <li>✅ Ajustes de ±1 a ±9</li>
+                            <li>✅ Progressão automática</li>
+                            <li>✅ Evita repetições</li>
+                            <li>✅ Máxima diversidade</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Downloads -->
+            <div style="background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white; padding: 20px; border-radius: 10px;">
+                <h3 style="margin: 0 0 15px 0; font-size: 1.3rem;">
+                    <i class="fas fa-download"></i> Formatos de Download
+                </h3>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 15px;">
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px;">
+                        <strong>📄 TXT</strong><br>
+                        <small>Formato simples - apenas as dezenas separadas por espaços</small>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px;">
+                        <strong>🌐 HTML</strong><br>
+                        <small>Página web completa com time do coração para impressão</small>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px;">
+                        <strong>📊 XLSX</strong><br>
+                        <small>Planilha do Excel com dezenas e times para análises</small>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 0 0 12px 12px; text-align: center; border-top: 2px solid #e9ecef;">
+            <button onclick="document.body.removeChild(this.closest('.fixed'))" style="
+                background: linear-gradient(135deg, #fff600, #12923d);
+                color: #1a1900;
+                border: none;
+                padding: 12px 30px;
+                border-radius: 8px;
+                cursor: pointer;
+                font-size: 1.1rem;
+                font-weight: 600;
+                transition: all 0.3s ease;
+            " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 15px rgba(255,246,0,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                <i class="fas fa-check"></i> Entendi! Vamos Apostar
+            </button>
+            <p style="margin: 15px 0 0 0; color: #6c757d; font-size: 0.9rem;">
+                <i class="fas fa-heart"></i> Jogue com seu time do coração - mais uma chance de ganhar!
+            </p>
+        </div>
+    `;
+    
+    modal.appendChild(dialog);
+    document.body.appendChild(modal);
+    
+    // Eventos para fechar o modal
+    const closeBtn = dialog.querySelector('#closeModal');
+    closeBtn.addEventListener('click', () => {
+        document.body.removeChild(modal);
+    });
+    
+    // Fechar clicando fora do modal
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            document.body.removeChild(modal);
+        }
+    });
+    
+    // Fechar com ESC
+    const keyHandler = (e) => {
+        if (e.key === 'Escape') {
+            document.body.removeChild(modal);
+            document.removeEventListener('keydown', keyHandler);
+        }
+    };
+    document.addEventListener('keydown', keyHandler);
+}
+</script>
+
+</body>
+</html>
